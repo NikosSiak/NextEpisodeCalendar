@@ -1,0 +1,33 @@
+from datetime import datetime, timedelta
+from time import gmtime, strftime  # for the timezone
+
+class Event:
+
+    timezone = strftime("%z", gmtime())
+
+    def __init__(self, summary: str, start: datetime, end: datetime = None, **kwargs):
+        self.summary = summary
+        self.start = start
+        self.end = end
+        if not self.end:
+            self.end = self.start + timedelta(hours=1)
+        self.options = {}
+        self.options.update(kwargs)
+
+    def toCalendarResource(self):
+        '''
+        Return a dictionary ready to be sent to the calendar api
+        '''
+        resource = {
+            'summary': self.summary,
+            'start': {
+                'dateTime': self.start.isoformat(),
+                'timeZone': Event.timezone
+            },
+            'end': {
+                'dateTime': self.end.isoformat(),
+                'timeZone': Event.timezone
+            }
+        }
+        resource.update(self.options)
+        return resource
