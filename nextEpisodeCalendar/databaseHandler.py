@@ -1,5 +1,5 @@
 import sqlite3
-
+import os.path
 
 class DB:
     __TABLE = 'series'
@@ -8,6 +8,15 @@ class DB:
 
     def __init__(self, dbPath: str):
         self.dbPath = dbPath
+        if (not os.path.exists(self.dbPath)):
+            conn = sqlite3.connect(self.dbPath)
+            c = conn.cursor()
+            c.execute(f'''CREATE TABLE {DB.__TABLE} (
+                            {DB.__URL_COLUMN} TEXT PRIMARY KEY,
+                            {DB.__NAME_COLUMN} TEXT
+                        )''')
+            conn.commit()
+            conn.close()
         self.conn = None
         self.cursor = None
 
