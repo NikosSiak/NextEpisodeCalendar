@@ -16,5 +16,6 @@ setup(
         'google-auth-httplib2 == 0.0.3',
         'google-auth-oauthlib == 0.4.1',
         'beautifulsoup4 == 4.8.2',
+        'aiohttp==3.6.2',
     ]
 )
