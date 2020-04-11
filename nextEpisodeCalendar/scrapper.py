@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup as soup
-from urllib.request import urlopen as uReq
 from datetime import datetime
 import asyncio
 import aiohttp
@@ -23,4 +22,41 @@ class SeriesScrapper:
                 return url
     
     
-   
+    async def findDate(self, url: str, name: str) -> tuple:
+        async with self.aiohttp_session.get(url) as resp:
+            if resp.status != 200:
+                return None
+            page_html = await resp.text()
+
+        page_soup = soup(page_html, "html.parser")
+
+        tr = page_soup.findAll('tr', {'class': 'vevent'})
+        now = datetime.now()
+        last_episode = (None, None, None)
+        for row in reversed(tr):
+
+            for span in row('span'):
+                span.decompose()
+            for sup in row('sup'):
+                sup.decompose()
+            
+            ep_title = row('td')[1].text
+            ep_date = None
+            # the air date isn't always on the same column
+            for td in reversed(row('td')):
+                try:
+                    ep_date = datetime.strptime(td.text, "%B %d, %Y")
+                    break
+                except ValueError:
+                    continue
+            
+            if ep_date and now > ep_date:
+                break
+
+            last_episode = (name, ep_title, ep_date)
+
+        if last_episode[2] and last_episode[2] > now:
+            return last_episode
+        
+        return None
+
