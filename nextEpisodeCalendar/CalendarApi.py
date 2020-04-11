@@ -31,5 +31,11 @@ class API:
 
         self.service = build('calendar', 'v3', credentials=creds)
         
-    def addEvent(self, event: Event):
-        self.service.events().insert(calendarId='primary', body=event.toCalendarResource()).execute()
+    def addEvents(self, events: list):
+        existing_events = self.service.events().list(calendarId='primary').execute()['items']
+
+        for event in events:
+            if not next((item for item in existing_events
+                if item['summary'] == event.summary and item['description'] == event.description), None):
+            
+                self.service.events().insert(calendarId='primary', body=event.toCalendarResource()).execute()
