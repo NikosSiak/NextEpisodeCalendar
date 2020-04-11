@@ -16,9 +16,15 @@ if not os.path.exists(DATA_DIR):
 DB_PATH = os.path.join(DATA_DIR, 'series.db')
 db = DB(DB_PATH)
 
+calendar = API() 
 
-def createEvents():
-    pass
+async def createEvents(scrapper: SeriesScrapper):
+    series = db.getAll()
+
+    episodes = await asyncio.gather(*[scrapper.findDate(s[1], s[0]) for s in series])
+    events = [Event(summary=ep[0], description=ep[1], start=ep[2].replace(hour=15)) for ep in episodes if ep]
+    calendar.addEvents(events)
+
 
 async def addSeries(scrapper, name: str, url: str = None):
     if not url:
@@ -54,7 +60,7 @@ async def main(loop):
     elif args.episodes:
         listEpisodes()
     else:
-        createEvents()
+        await createEvents(scrapper)
 
     await session.close()
 
