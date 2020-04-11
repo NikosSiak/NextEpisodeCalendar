@@ -11,7 +11,7 @@ class SeriesScrapper:
         self.now = datetime.now()
         self.aiohttp_session = session
     
-    async def findUrl(self, series_name: str):
+    async def findUrl(self, series_name: str) -> str:
         series_name = series_name.replace(' ', '_')
         url = f'https://en.wikipedia.org/wiki/List_of_{series_name}_episodes'
         async with self.aiohttp_session.get(url) as resp:
