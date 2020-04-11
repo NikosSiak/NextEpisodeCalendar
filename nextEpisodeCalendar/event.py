@@ -5,8 +5,9 @@ class Event:
 
     timezone = strftime("%z", gmtime())
 
-    def __init__(self, summary: str, start: datetime, end: datetime = None, **kwargs):
+    def __init__(self, summary: str, description: str, start: datetime, end: datetime = None, **kwargs):
         self.summary = summary
+        self.description = description
         self.start = start
         self.end = end
         if not self.end:
@@ -27,7 +28,8 @@ class Event:
             'end': {
                 'dateTime': self.end.isoformat(),
                 'timeZone': Event.timezone
-            }
+            },
+            'description': self.description
         }
         resource.update(self.options)
         return resource
