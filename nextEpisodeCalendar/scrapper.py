@@ -11,6 +11,17 @@ class SeriesScrapper:
         self.aiohttp_session = session
     
     async def findUrl(self, series_name: str) -> str:
+        '''
+        Finds the wikipedia url for a series. The two common urls this function tries are 
+        https://en.wikipedia.org/wiki/List_of_{series_name}_episodes and 
+        https://en.wikipedia.org/wiki/{series_name}_(TV_series)
+
+        Parameters:
+            series_name (str): The series name.
+
+        Returns:
+            url (str): The series wikipedia url, if it exists.
+        '''
         series_name = series_name.replace(' ', '_')
         url = f'https://en.wikipedia.org/wiki/List_of_{series_name}_episodes'
         async with self.aiohttp_session.get(url) as resp:
@@ -23,6 +34,17 @@ class SeriesScrapper:
     
     
     async def findDate(self, url: str, name: str) -> tuple:
+        '''
+        Finds the date of the next episode for the given url.
+
+        Parameters:
+            url (str): The series url.
+            name (str): The series name, only used to return in the tuple
+        
+        Returns:
+            episode (tuple): A tuple consisting from 3 strings. 
+            The series name, the next episode title and the date the episode will be aired.
+        '''
         async with self.aiohttp_session.get(url) as resp:
             if resp.status != 200:
                 return None

@@ -32,6 +32,12 @@ class API:
         self.service = build('calendar', 'v3', credentials=creds)
         
     def addEvents(self, events: list):
+        '''
+        Adds a list of Events to the primary calendar of user.
+        
+        Parameters:
+            events (list): A list of Event objects.
+        '''
         existing_events = self.service.events().list(calendarId='primary').execute()['items']
 
         for event in events:
