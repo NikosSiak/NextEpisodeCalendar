@@ -14,6 +14,7 @@ class API:
         DATA_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
         TOKEN_FILE_PATH = os.path.join(DATA_DIR, 'token.pickle')
         CLIENT_SECRET_FILE_PATH = os.path.join(DATA_DIR, 'client_secret.json')
+        CALENDAR_ID_FILE_PATH = os.path.join(DATA_DIR, 'calendarID.pickle')
 
         creds = None
         if os.path.exists(TOKEN_FILE_PATH):
@@ -30,6 +31,20 @@ class API:
                 pickle.dump(creds, token)
 
         self.service = build('calendar', 'v3', credentials=creds)
+
+        if os.path.exists(CALENDAR_ID_FILE_PATH):
+            with open(CALENDAR_ID_FILE_PATH, 'rb') as f:
+                self.calendarID = pickle.load(f)
+        else:
+            self.calendarID = self.createCalendar()
+            with open(CALENDAR_ID_FILE_PATH, 'wb') as f:
+                pickle.dump(self.calendarID, f)
+
+    def createCalendar(self):
+        calendar = {'summary': 'episodes'}
+        created_calendar = self.service.calendars().insert(body=calendar).execute()
+        return created_calendar['id']
+
         
     def addEvents(self, events: list):
         '''
@@ -38,10 +53,10 @@ class API:
         Parameters:
             events (list): A list of Event objects.
         '''
-        existing_events = self.service.events().list(calendarId='primary').execute()['items']
+        existing_events = self.service.events().list(calendarId=self.calendarID).execute()['items']
 
         for event in events:
             if not next((item for item in existing_events
                 if item['summary'] == event.summary and item['description'] == event.description), None):
             
-                self.service.events().insert(calendarId='primary', body=event.toCalendarResource()).execute()
+                self.service.events().insert(calendarId=self.calendarID, body=event.toCalendarResource()).execute()
