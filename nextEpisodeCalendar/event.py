@@ -33,3 +33,6 @@ class Event:
         }
         resource.update(self.options)
         return resource
+
+    def __str__(self):
+        return f'-----{self.summary}-----\n{self.description}\n{self.start.strftime("%B %d, %Y")}'
