@@ -1,5 +1,7 @@
 import pickle
 import os.path
+from shutil import copyfile
+import sys
 from datetime import datetime
 
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -25,6 +27,12 @@ class API:
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
             else:
+                if not os.path.exists(CLIENT_SECRET_FILE_PATH):
+                    try:
+                        copyfile(input('Client Secret file path: '), CLIENT_SECRET_FILE_PATH)
+                    except FileNotFoundError:
+                        print('No file found. Exiting')
+                        sys.exit(1)
                 flow = InstalledAppFlow.from_client_secrets_file(
                     CLIENT_SECRET_FILE_PATH, SCOPES)
                 creds = flow.run_local_server(port=0)
