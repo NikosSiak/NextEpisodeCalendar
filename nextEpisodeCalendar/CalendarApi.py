@@ -1,5 +1,6 @@
 import pickle
 import os.path
+from datetime import datetime
 
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
@@ -60,3 +61,16 @@ class API:
                 if item['summary'] == event.summary and item['description'] == event.description), None):
             
                 self.service.events().insert(calendarId=self.calendarID, body=event.toCalendarResource()).execute()
+
+    def getEvents(self) -> list:
+        '''
+        Returns a list of Event objects sorted by date.
+        '''
+        events = self.service.events().list(calendarId=self.calendarID).execute()['items']
+        events = [Event(event['summary'], 
+                        event['description'], 
+                        datetime.strptime(event['start']['dateTime'], '%Y-%m-%dT%H:%M:%S%z')
+                    ) 
+                for event in events]
+
+        return sorted(events, key=lambda event: event.start)
