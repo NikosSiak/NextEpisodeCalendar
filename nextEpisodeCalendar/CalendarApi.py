@@ -11,9 +11,9 @@ from nextEpisodeCalendar.event import Event
 class API:
     def __init__(self):
         SCOPES = ['https://www.googleapis.com/auth/calendar.events']
-        PRIVATE_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
-        TOKEN_FILE_PATH = os.path.join(PRIVATE_DIR, 'token.pickle')
-        CLIENT_SECRET_FILE_PATH = os.path.join(PRIVATE_DIR, 'client_secret.json')
+        DATA_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
+        TOKEN_FILE_PATH = os.path.join(DATA_DIR, 'token.pickle')
+        CLIENT_SECRET_FILE_PATH = os.path.join(DATA_DIR, 'client_secret.json')
 
         creds = None
         if os.path.exists(TOKEN_FILE_PATH):
