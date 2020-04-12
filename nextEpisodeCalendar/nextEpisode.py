@@ -16,7 +16,7 @@ if not os.path.exists(DATA_DIR):
 DB_PATH = os.path.join(DATA_DIR, 'series.db')
 db = DB(DB_PATH)
 
-calendar = API() 
+calendar = API()
 
 async def createEvents(scrapper: SeriesScrapper):
     series = db.getAll()
@@ -36,6 +36,11 @@ async def addSeries(scrapper, name: str, url: str = None):
 
     db.insert(name, url)
 
+    episode = await scrapper.findDate(url, name)
+    if episode:
+        calendar.addEvents([Event(summary=episode[0], description=episode[1], start=episode[2].replace(hour=15))])
+
+
 def listSeries():
     print(db.getAll())
 
@@ -44,14 +49,7 @@ def listEpisodes():
         print(event)
 
 
-async def main(loop):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-a', '--add', type=str, dest='add', help='Add a new series to db')
-    parser.add_argument('--url', type=str, help='The wikipedia url, if not found by the scrapper')
-    parser.add_argument('-l', '--list', action='store_true', dest='series', help='List your watchlist')
-    parser.add_argument('-e', '--episodes', action='store_true', dest='episodes', help='List the next episodes')
-    args = parser.parse_args()
-
+async def run(loop, args):
     session = aiohttp.ClientSession(loop=loop)
     scrapper = SeriesScrapper(session)
 
@@ -67,9 +65,18 @@ async def main(loop):
     await session.close()
 
 
-if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    
-    loop.run_until_complete(main(loop))
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-a', '--add', type=str, dest='add', help='Add a new series to db')
+    parser.add_argument('--url', type=str, help='The wikipedia url, if not found by the scrapper')
+    parser.add_argument('-l', '--list', action='store_true', dest='series', help='List your watchlist')
+    parser.add_argument('-e', '--episodes', action='store_true', dest='episodes', help='List the next episodes')
+    args = parser.parse_args()
 
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(run(loop, args))
     loop.close()
+
+
+if __name__ == "__main__":
+    main()
