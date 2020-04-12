@@ -40,7 +40,9 @@ def listSeries():
     print(db.getAll())
 
 def listEpisodes():
-    pass
+    for event in calendar.getEvents():
+        print(event)
+
 
 async def main(loop):
     parser = argparse.ArgumentParser()
