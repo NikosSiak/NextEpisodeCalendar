@@ -22,6 +22,7 @@ class SeriesScrapper:
         Returns:
             url (str): The series wikipedia url, if it exists.
         '''
+
         series_name = series_name.replace(' ', '_')
         url = f'https://en.wikipedia.org/wiki/List_of_{series_name}_episodes'
         async with self.aiohttp_session.get(url) as resp:
@@ -45,6 +46,7 @@ class SeriesScrapper:
             episode (tuple): A tuple consisting from 3 strings. 
             The series name, the next episode title and the date the episode will be aired.
         '''
+
         async with self.aiohttp_session.get(url) as resp:
             if resp.status != 200:
                 return None

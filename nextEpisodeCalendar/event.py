@@ -19,6 +19,7 @@ class Event:
         '''
         Return a dictionary ready to be sent to the calendar api
         '''
+
         resource = {
             'summary': self.summary,
             'start': {

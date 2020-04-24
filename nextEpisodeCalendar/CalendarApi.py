@@ -62,6 +62,7 @@ class API:
         Parameters:
             events (list): A list of Event objects.
         '''
+
         existing_events = self.service.events().list(calendarId=self.calendarID).execute()['items']
 
         for event in events:
@@ -74,6 +75,7 @@ class API:
         '''
         Returns a list of Event objects sorted by date.
         '''
+
         events = self.service.events().list(calendarId=self.calendarID).execute()['items']
         events = [Event(event['summary'], 
                         event['description'], 
