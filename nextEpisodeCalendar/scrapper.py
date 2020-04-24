@@ -56,9 +56,7 @@ class SeriesScrapper:
 
         tr = page_soup.findAll('tr', {'class': 'vevent'})
         now = datetime.now()
-        last_episode = (None, None, None)
-        for row in reversed(tr):
-
+        for row in tr:
             for span in row('span'):
                 span.decompose()
             for sup in row('sup'):
@@ -74,13 +72,8 @@ class SeriesScrapper:
                 except ValueError:
                     continue
             
-            if ep_date and now > ep_date:
-                break
-
-            last_episode = (name, ep_title, ep_date)
-
-        if last_episode[2] and last_episode[2] > now:
-            return last_episode
+            if ep_date and now < ep_date:
+                return (name, ep_title, ep_date)
         
         return None
 
